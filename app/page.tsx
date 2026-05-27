@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 
 const productCategories = [
   "不确定，让 AI 判断",
@@ -72,6 +72,13 @@ type ResultModule = {
   featured?: boolean;
 };
 
+type UploadedImage = {
+  id: string;
+  name: string;
+  size: number;
+  url: string;
+};
+
 const initialForm: FormState = {
   title: "",
   description: "",
@@ -88,11 +95,35 @@ function displayValue(value: string) {
   return value.trim() || "需要卖家补充确认";
 }
 
+function formatFileSize(size: number) {
+  if (size >= 1024 * 1024) {
+    return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+  }
+
+  return `${Math.max(1, Math.round(size / 1024))} KB`;
+}
+
+function createImageId() {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
 function hasSparseInfo(form: FormState) {
   return !form.title.trim() && !form.description.trim() && !form.keywords.trim();
 }
 
-function buildProductInfo(form: FormState) {
+function buildImageReminder(imageCount: number) {
+  if (imageCount > 0) {
+    return `已选择 ${imageCount} 张产品图片。我会随消息一起上传产品图片，请结合图片识别产品外观、结构、颜色、材质、配件、安装位置和细节。不要凭空改变产品外观。`;
+  }
+
+  return "当前未上传产品图片，建议补充产品主图、细节图、尺寸图、包装图或安装场景图，以获得更准确的图片图需和生图 Prompt。";
+}
+
+function buildProductInfo(form: FormState, imageCount: number) {
   const sparseWarning = hasSparseInfo(form)
     ? "\n当前商品信息不足，建议补充标题、描述、关键词、产品尺寸、材质、适配信息、包装清单和更多产品图片，以获得更准确结果。"
     : "";
@@ -106,7 +137,7 @@ function buildProductInfo(form: FormState) {
 目标市场视觉风格：${form.visualStyle}
 生成深度：${form.generationDepth}
 输出语言：${form.outputLanguage}
-产品图片：我会随消息一起上传，请结合图片识别产品外观、结构、材质、细节和用途。${sparseWarning}`;
+产品图片：${buildImageReminder(imageCount)}${sparseWarning}`;
 }
 
 function getCustomerFacingLanguage(form: FormState) {
@@ -297,12 +328,12 @@ function buildSharedRules(form: FormState) {
 8. ${languageHint}${autoPartsDepth}`;
 }
 
-function buildFullTask(form: FormState) {
+function buildFullTask(form: FormState, imageCount: number) {
   return `【角色设定】
 你是 Mercado Libre / Mercado Livre 跨境电商商品内容专家，熟悉拉美市场消费者审美、汽配类产品上架逻辑、商品标题 SEO、转化型描述和电商图片策划。
 
 【我的商品信息】
-${buildProductInfo(form)}
+${buildProductInfo(form, imageCount)}
 
 【任务目标】
 请基于我提供的信息和产品图片，完成：
@@ -343,12 +374,12 @@ ${buildSharedRules(form)}
 ${buildFinalOutputChecklist()}`;
 }
 
-function buildIdentityTask(form: FormState) {
+function buildIdentityTask(form: FormState, imageCount: number) {
   return `【角色设定】
 你是 Mercado Libre / Mercado Livre 商品识别与定位专家，尤其擅长汽配、摩配、汽车用品、工具和跨境电商产品的上架定位。
 
 【商品信息】
-${buildProductInfo(form)}
+${buildProductInfo(form, imageCount)}
 
 ${buildSharedRules(form)}
 
@@ -386,12 +417,12 @@ ${buildSharedRules(form)}
 3. 可能导致差评或退货的 8 个信息缺口。`;
 }
 
-function buildResearchTask(form: FormState) {
+function buildResearchTask(form: FormState, imageCount: number) {
   return `【角色设定】
 你是拉美电商市场调研分析师，熟悉 Mercado Libre México、Mercado Livre Brasil 的标题结构、买家评论、竞品图片和汽配类商品购买决策。
 
 【商品信息】
-${buildProductInfo(form)}
+${buildProductInfo(form, imageCount)}
 
 ${buildSharedRules(form)}
 
@@ -421,12 +452,12 @@ ${buildSharedRules(form)}
 给出 5 个可主打方向，每个方向包含：适合强调的卖点、适合放在哪张图、适合放进标题还是描述。`;
 }
 
-function buildListingTask(form: FormState) {
+function buildListingTask(form: FormState, imageCount: number) {
   return `【角色设定】
 你是 Mercado Libre / Mercado Livre 商品标题和描述优化专家，熟悉拉美消费者阅读习惯、SEO 关键词融合和汽配类商品减少误购的写法。
 
 【商品信息】
-${buildProductInfo(form)}
+${buildProductInfo(form, imageCount)}
 
 ${buildSharedRules(form)}
 
@@ -462,7 +493,7 @@ ${buildSharedRules(form)}
 给 7 张图分别提供 1-2 句适合放在图上的短文案，文案要简洁、有信任感，不要促销口号。图片短文案必须使用西语或葡语，不能出现中文。`;
 }
 
-function buildImageBriefTask(form: FormState) {
+function buildImageBriefTask(form: FormState, imageCount: number) {
   return `${buildVisualSpec(form)}
 
 ${buildOriginalImageProtectionRules()}
@@ -473,7 +504,7 @@ ${buildImageTextLanguageRules(form)}
 你是 Mercado Libre / Mercado Livre 商品图片策划师，熟悉拉美电商专业视觉、汽配类图片结构和降低误购/退货的详情图设计。
 
 【商品信息】
-${buildProductInfo(form)}
+${buildProductInfo(form, imageCount)}
 
 ${buildSharedRules(form)}
 
@@ -550,12 +581,12 @@ ${buildSharedRules(form)}
 - 不允许中文。`;
 }
 
-function buildImagePromptTask(form: FormState) {
+function buildImagePromptTask(form: FormState, imageCount: number) {
   return `【角色设定】
 你是电商 AI 生图 Prompt 策划师，熟悉 Mercado Libre / Mercado Livre 商品图片风格和拉美消费者对专业、清楚、可信赖图片的偏好。
 
 【商品信息】
-${buildProductInfo(form)}
+${buildProductInfo(form, imageCount)}
 
 ${buildSharedRules(form)}
 
@@ -625,33 +656,33 @@ ${buildNegativePromptRules()}
 ${buildFinalOutputChecklist()}`;
 }
 
-function buildModules(form: FormState): ResultModule[] {
+function buildModules(form: FormState, imageCount: number): ResultModule[] {
   return [
     {
       title: "一键完整任务书",
       useCase: "第一次把商品资料和图片发给 ChatGPT 时使用，一次性生成完整上架内容方案。",
-      content: buildFullTask(form),
+      content: buildFullTask(form, imageCount),
     },
     {
       title: "产品识别与定位任务书",
       useCase: "当你不确定商品类目、用途、定位或汽配适配风险时使用。",
-      content: buildIdentityTask(form),
+      content: buildIdentityTask(form, imageCount),
     },
     {
       title: "竞品与市场调研任务书",
       useCase: "准备写标题、描述和图片前，用来让 ChatGPT 先总结市场规律和买家关注点。",
-      content: buildResearchTask(form),
+      content: buildResearchTask(form, imageCount),
     },
     {
       title: "美客多标题与描述任务书",
       useCase: "商品定位清楚后，用来生成标题、卖点、描述、购买前确认和图片短文案。",
-      content: buildListingTask(form),
+      content: buildListingTask(form, imageCount),
     },
     {
       title: "七张图片图需任务书",
       useCase:
         "用于确认整套图片策划。建议先复制给 ChatGPT 确认 7 张图的图需，再进入生图 Prompt。",
-      content: buildImageBriefTask(form),
+      content: buildImageBriefTask(form, imageCount),
       badge: "用于确认整套图片策划",
       featured: true,
     },
@@ -659,7 +690,7 @@ function buildModules(form: FormState): ResultModule[] {
       title: "七张生图 Prompt 任务书",
       useCase:
         "用于复制给 GPT 生图模型。建议在模块 5 图需确认后，再复制本模块生成图片。",
-      content: buildImagePromptTask(form),
+      content: buildImagePromptTask(form, imageCount),
       badge: "用于复制给 GPT 生图模型",
       featured: true,
     },
@@ -668,13 +699,28 @@ function buildModules(form: FormState): ResultModule[] {
 
 export default function Home() {
   const [form, setForm] = useState<FormState>(initialForm);
+  const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const [hasGenerated, setHasGenerated] = useState(true);
   const [copyStatus, setCopyStatus] = useState("");
+  const latestImagesRef = useRef<UploadedImage[]>([]);
 
-  const modules = useMemo(() => buildModules(form), [form]);
+  const modules = useMemo(
+    () => buildModules(form, uploadedImages.length),
+    [form, uploadedImages.length],
+  );
   const allModuleText = modules
     .map((module, index) => `# ${index + 1}. ${module.title}\n\n${module.content}`)
     .join("\n\n---\n\n");
+
+  useEffect(() => {
+    latestImagesRef.current = uploadedImages;
+  }, [uploadedImages]);
+
+  useEffect(() => {
+    return () => {
+      latestImagesRef.current.forEach((image) => URL.revokeObjectURL(image.url));
+    };
+  }, []);
 
   function updateField<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((current) => ({ ...current, [key]: value }));
@@ -691,6 +737,38 @@ export default function Home() {
           ? "Mercado Livre Brasil 风格"
           : "Mercado Libre México 风格",
     }));
+    setHasGenerated(false);
+  }
+
+  function handleImageSelect(event: ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(event.target.files ?? []);
+    const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
+    const images = files
+      .filter((file) => allowedTypes.has(file.type))
+      .map((file) => ({
+        id: createImageId(),
+        name: file.name,
+        size: file.size,
+        url: URL.createObjectURL(file),
+      }));
+
+    if (images.length > 0) {
+      setUploadedImages((current) => [...current, ...images]);
+      setHasGenerated(false);
+    }
+
+    event.target.value = "";
+  }
+
+  function removeImage(imageId: string) {
+    setUploadedImages((current) => {
+      const imageToRemove = current.find((image) => image.id === imageId);
+      if (imageToRemove) {
+        URL.revokeObjectURL(imageToRemove.url);
+      }
+
+      return current.filter((image) => image.id !== imageId);
+    });
     setHasGenerated(false);
   }
 
@@ -770,6 +848,60 @@ export default function Home() {
               placeholder="例如：LED, faro, antiniebla, universal, resistente al agua"
             />
           </label>
+
+          <section className="image-upload-panel">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h3 className="text-base font-semibold text-slate-950">产品图片</h3>
+                <p className="mt-1 text-sm leading-6 text-slate-500">
+                  上传产品图片，仅用于本地预览。生成任务书后，请将图片一并发送给 ChatGPT 进行识别。
+                </p>
+              </div>
+              <span className="image-count">已选择 {uploadedImages.length} 张图片</span>
+            </div>
+
+            <label className="upload-button">
+              选择产品图片
+              <input
+                className="sr-only"
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleImageSelect}
+              />
+            </label>
+
+            {uploadedImages.length === 0 ? (
+              <p className="image-empty">
+                暂未上传产品图片。建议上传主图、细节图、包装图或安装场景图，ChatGPT 可结合图片更准确识别产品。
+              </p>
+            ) : (
+              <div className="image-preview-grid">
+                {uploadedImages.map((image) => (
+                  <div className="image-preview-card" key={image.id}>
+                    {/* Native img is appropriate here because object URLs are local browser previews. */}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={image.url} alt={image.name} className="image-preview-thumb" />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold text-slate-800">
+                        {image.name}
+                      </p>
+                      <p className="mt-1 text-xs text-slate-500">
+                        {formatFileSize(image.size)}
+                      </p>
+                    </div>
+                    <button
+                      className="image-remove-button"
+                      type="button"
+                      onClick={() => removeImage(image.id)}
+                    >
+                      删除
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
             <label className="block">
