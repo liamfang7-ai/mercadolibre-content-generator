@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #eef2f5;
+  --foreground: #0f172a;
 }
 
 @theme inline {
@@ -12,15 +12,145 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.field-control {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  padding: 0.7rem 0.75rem;
+  color: #0f172a;
+  outline: none;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+
+.field-control:focus {
+  border-color: #2d6cdf;
+  box-shadow: 0 0 0 3px rgb(45 108 223 / 15%);
+}
+
+.field-control::placeholder {
+  color: #94a3b8;
+}
+
+.tab-button {
+  flex: 0 0 auto;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #475569;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.tab-button:hover {
+  border-color: #2d6cdf;
+  color: #1d4ed8;
+}
+
+.tab-button-active {
+  border-color: #2d6cdf;
+  background: #eaf1ff;
+  color: #1d4ed8;
+}
+
+.secondary-button {
+  flex: 0 0 auto;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #334155;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.secondary-button:hover {
+  border-color: #2d6cdf;
+  background: #f8fbff;
+  color: #1d4ed8;
+}
+
+.result-module {
+  overflow: hidden;
+  border: 1px solid #d7dee8;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.result-module-featured {
+  border-color: #2d6cdf;
+  box-shadow: 0 10px 26px rgb(45 108 223 / 10%);
+}
+
+.result-summary {
+  display: flex;
+  cursor: pointer;
+  list-style: none;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.result-summary::-webkit-details-marker {
+  display: none;
+}
+
+.module-badge {
+  display: inline-block;
+  margin-left: 0.6rem;
+  border-radius: 999px;
+  background: #eaf1ff;
+  padding: 0.2rem 0.55rem;
+  vertical-align: middle;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #1d4ed8;
+}
+
+.result-content {
+  max-height: 760px;
+  overflow: auto;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+  padding: 1rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: var(--font-geist-mono), Consolas, monospace;
+  font-size: 0.86rem;
+  line-height: 1.75;
+  color: #1e293b;
 }
