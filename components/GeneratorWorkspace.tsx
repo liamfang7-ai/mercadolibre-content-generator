@@ -378,6 +378,63 @@ function hasSparseInfo(form: FormState) {
   return !form.title.trim() && !form.description.trim() && !form.keywords.trim();
 }
 
+function buildStep2ImageStrategyRules() {
+  return `【卖点转化规则】
+每一个核心卖点不能直接做成空泛卖点海报。必须先回答：这个卖点对应买家什么疑虑？能帮助买家做什么购买决策？适合做成哪类图片？是否提供上一张图没有的新信息？是否能降低误购、退货或差评？如果无法视觉化为具体信息图，不要强行单独生成一张图。
+错误方式：核心卖点 → 大标题 + 产品 + 炫酷背景。
+正确方式：核心卖点 → 买家疑虑 → 信息图 / 细节图 / 适配确认图 / 包装内容图 / 安装场景图 / 防误购提醒图。
+
+【整套图视觉母版】
+在生成 7 张图之前，必须先生成一套视觉母版，包含主视觉风格、主色、辅助色、强调色、字体体系、标题位置规则、信息卡片样式、图标风格、产品光影规则、背景变化边界、底部提示条样式、每张图的安全边距规则。
+所有 7 张图都必须继承这个母版。允许每张图根据内容变化背景和布局，但不能像 7 张不同模板。必须避免：一张白底电商风、一张科技广告风、一张说明书风、一张促销海报风这种风格跳跃。
+
+【整套图统一性规则】
+所有 7 张图必须像同一套商品详情图，不是 7 张不同模板海报。使用统一的字体体系、标题层级、安全边距、信息卡片样式、图标风格、产品光影处理、强调色逻辑、底部提醒条或信息条样式。背景可以变化，但必须属于同一个视觉系统。信息可以较多，但必须分区清楚、层级明确、移动端可读。
+禁止每张图都换一种视觉语言；禁止图标风格不统一、字体大小和字重随意变化、背景风格跳跃过大、每张图都像独立广告海报。
+
+【图片价值淘汰机制】
+每张图生成前必须判断：是否提供新信息、是否解决具体疑虑、是否帮助购买决策、是否只是重复展示产品、是否只是空泛卖点海报、是否会降低整套图高级感。如果某张图不能提供新信息，必须替换。禁止为了凑满 7 张而生成低价值图。
+低价值图定义：只有大标题没有具体信息；产品大图重复出现但没有新增解释；炫酷背景多实际内容少；空泛功能词不解决买家问题；视觉风格和整套图不一致；看起来像廉价 AI 海报。
+
+【图片类型优先级】
+对于汽配、摩配、汽车用品类产品，图 2-7 应优先从以下有购买决策价值的图片类型中动态选择：购买前确认图、包装内容 / 收到什么图、产品细节 / 接口 / 材质 / 局部放大图、适配核对 / 参考编号 / 兼容信息图、安装位置 / 安装场景图、新旧件对比 / 原件核对图、尺寸 / 数量 / 左右侧 / 前后位置确认图、防误购提醒图、真实维修环境 / 使用场景图。
+减少或避免：空泛功能卖点海报、大产品 + 大标题 + 炫光背景、没有新信息的重复产品展示图、纯装饰性科技光效图、为了凑数量生成的低价值图。
+
+【视觉路线选择】
+系统需要先判断产品类型，再选择适合的视觉路线：
+1. 传感器 / 电磁阀 / 接口类汽配：专业技术确认风；深蓝黑 / 深灰 / 白色 / 少量黄色或橙色强调；重点展示接口、编号、安装位、兼容确认。
+2. 橡胶衬套 / 底盘 / 悬挂件：工业维修风；黑灰 / 白 / 橙红小面积强调；重点展示数量、结构、孔位、安装位置、耐用感、适配确认。
+3. 车灯 / 电子照明类：科技简洁风；深蓝 / 灰 / 白 / 少量冷色光效；重点展示亮度、角度、防水、安装位置，但不要过度炫光。
+4. 车内用品 / 收纳 / 装饰件：干净生活方式风；浅灰 / 米白 / 黑 / 少量品牌色；重点展示车内场景、使用前后、空间利用、安装便利。
+5. 工具类：专业工具台风；深灰 / 金属色 / 白 / 橙色强调；重点展示尺寸、用法、手持场景、材质细节。
+
+【包装展示规则】
+不要默认使用普通牛皮纸盒作为主视觉。只有用户提供真实品牌包装图、包装设计有品牌感或能提升信任、包装信息对买家有购买决策价值时才展示包装。如果只是展示“收到什么”，优先使用产品平铺、数量标签、简洁信息卡片、配件清单、干净背景。不要使用巨大的普通牛皮纸箱、无品牌廉价包装盒、看起来像临时发货盒的包装、让包装抢过产品主体。
+
+【避免廉价科技海报规则】
+不要为了表现功能而默认使用大面积蓝色炫光、夸张能量流、科幻背景、过度发光线条、没有实际信息的功能海报。功能图必须说明该功能解决什么买家问题、如何通过产品细节/安装位置/接口/结构/使用场景体现、这张图提供什么新信息。禁止：大产品 + 大标题 + 炫光背景 + 空泛功能词。
+
+【细节图高级感规则】
+细节图要背景克制、产品主体清楚、产品质感真实、局部放大框精致、引导线细而准确、信息少而准。不要粗重描边、不要过多黄色、不要脏乱科技纹理、不要让放大框像廉价模板、放大框边线不要太粗。重点展示真实材质、接口、孔位、密封圈、边缘、结构。
+
+【信息密度规则】
+不要错误理解为“信息越少越高级”。允许图片信息较多，但必须满足：信息有明确购买决策价值、版式有秩序、信息分区清楚、主次层级明确、移动端可读、不堆砌空泛卖点。高质量信息图可以包含购买前确认清单、兼容核对信息、安装前检查项、包装内容、数量确认、接口确认，但不能杂乱、不能像说明书截图、不能像廉价模板。
+
+【第 6 张图特殊限制】
+第 6 张不能自动生成空泛功能海报，不得默认生成蓝色科技光效图、大标题 + 产品 + 炫光背景、没有新信息的卖点图、空泛功能词海报。第 6 张优先生成真实安装 / 使用场景图、维修环境信任图、新旧件对比图、产品使用位置图、防误购 / 核对提醒图、具体功能验证信息图、产品细节与使用场景结合图。如果没有足够具体内容支撑，不要生成独立功能海报。
+
+【详情图逻辑规则】
+七张图应该像一套 Mercado Libre / Mercado Livre 商品详情图，用来帮助买家了解产品、确认信息、降低误购，而不是 7 张独立广告海报。每张图必须回答一个具体问题：我会收到什么？这是不是我要找的接口 / 尺寸 / 位置？购买前要确认什么？产品细节在哪里？适合什么安装场景？如何避免买错？它和最终描述中的哪个卖点相关？如果一张图不能回答具体问题，就不要生成这张图，或把它合并到其他图里。
+
+【生图 Prompt 必须加入的详情图约束】
+每张 Prompt 必须包含：
+This image must look like one page from a consistent Mercado Libre automotive product detail image set, not a standalone advertising poster. It must follow the same typography system, spacing, icon style, color palette, information card style, and product lighting as the other images. The image must provide practical purchase decision value, not just a generic benefit slogan.
+This image should not look like a generic advertising poster. It must work as a practical Mercado Libre product detail image that helps the buyer verify product information, reduce purchase risk, or understand the product value.
+
+【图组价值检查】
+最后检查 7 张图是否满足：每张图提供不同新信息；没有为了凑图生成低价值海报；至少 4 张图直接帮助买家做购买确认；避免普通牛皮纸盒降低高级感；避免廉价蓝光科技海报；细节图足够精致；整套图像同一套商品详情图；每张图的卖点都转化为买家疑虑或购买决策价值；客户可见文字没有中文；没有虚构车型、编号、认证、品牌、尺寸、材质；第 6 张图没有变成空泛功能海报；统一字体体系、标题层级、信息卡片样式、图标风格、强调色使用逻辑。`;
+}
+
 function buildImageReminder(imageCount: number) {
   if (imageCount > 0) {
     return `已选择 ${imageCount} 张产品图片。我会随消息一起上传产品图片，请结合图片识别产品外观、结构、颜色、材质、配件、安装位置和细节。不要凭空改变产品外观。`;
@@ -826,6 +883,8 @@ ${buildOriginalImageProtectionRules()}
 
 ${buildImageTextLanguageRules(form)}
 
+${buildStep2ImageStrategyRules()}
+
 【核心要求】
 1. 先读取已确认标题、描述和核心卖点。
 2. 从最终描述中提取最值得视觉化的卖点。
@@ -848,7 +907,13 @@ ${buildImageTextLanguageRules(form)}
 - 图片编号
 - 图片名称
 - 承接的最终描述卖点
+- 对应买家疑虑
+- 购买决策价值
 - 为什么做这张图
+- 这张图提供的新信息
+- 是否避免空泛卖点海报
+- 如果该卖点不适合单独成图，如何合并到其他图片中
+- 它如何保持整套图统一风格
 - 解决的买家疑虑
 - 推荐视觉风格
 - 背景建议
@@ -870,6 +935,10 @@ ${buildImageTextLanguageRules(form)}
 【输出 3：七张图片生图执行 Prompt 指令包】
 每张图必须包含：
 - 承接的最终描述卖点
+- Buyer concern this image solves
+- Purchase decision value
+- Visualized selling point
+- Avoid making this image a generic benefit poster
 - 无文字生图 Prompt
 - 带文字参考 Prompt
 - Negative Prompt
@@ -1284,6 +1353,29 @@ export default function GeneratorWorkspace({ mode }: GeneratorWorkspaceProps) {
     value: ConfirmedContent[K],
   ) {
     setConfirmedContent((current) => ({ ...current, [key]: value }));
+    setHasGenerated(false);
+  }
+
+  function buildLatestModules() {
+    return buildModules(form, uploadedImages.length, confirmedContent);
+  }
+
+  async function copyLatestContentTask() {
+    const latestModules = buildLatestModules();
+    setHasGenerated(true);
+    await copyText(latestModules[0].content, "商品内容生成任务书");
+  }
+
+  async function copyLatestImageTask() {
+    if (!hasConfirmedContent) {
+      setCopyStatus("请先完成 Step 1，并填写或确认最终标题、描述和核心卖点。");
+      window.setTimeout(() => setCopyStatus(""), 2400);
+      return;
+    }
+
+    const latestModules = buildLatestModules();
+    setHasGenerated(true);
+    await copyText(latestModules[1].content, "图片图需任务书");
   }
 
   function updateTargetSite(value: FormState["targetSite"]) {
@@ -1765,7 +1857,7 @@ export default function GeneratorWorkspace({ mode }: GeneratorWorkspaceProps) {
                 </p>
                 {isManualMode && !hasGenerated ? (
                   <p className="mt-2 text-sm font-medium text-[#b45309]">
-                    输入已更新，点击“生成任务书”刷新任务书视图。
+                    输入已更新。点击“生成 / 刷新任务书”更新任务书预览；一键复制按钮也会自动使用最新内容。
                   </p>
                 ) : null}
                 {copyStatus ? (
@@ -1777,14 +1869,14 @@ export default function GeneratorWorkspace({ mode }: GeneratorWorkspaceProps) {
                   <button
                     className="secondary-button"
                     type="button"
-                    onClick={() => copyText(modules[0].content, "商品内容任务书")}
+                    onClick={copyLatestContentTask}
                   >
                     复制商品内容任务书
                   </button>
                   <button
                     className="secondary-button"
                     type="button"
-                    onClick={() => copyText(modules[1].content, "图片图需任务书")}
+                    onClick={copyLatestImageTask}
                   >
                     复制图片图需任务书
                   </button>
@@ -1899,6 +1991,18 @@ export default function GeneratorWorkspace({ mode }: GeneratorWorkspaceProps) {
                 <h3 className="text-base font-semibold text-slate-950">
                   无需 API 的 ChatGPT 手动中转模式
                 </h3>
+                <button
+                  className="refresh-task-button"
+                  type="button"
+                  onClick={() => {
+                    buildLatestModules();
+                    setHasGenerated(true);
+                    setCopyStatus("任务书预览已根据当前输入刷新");
+                    window.setTimeout(() => setCopyStatus(""), 1800);
+                  }}
+                >
+                  生成 / 刷新任务书
+                </button>
                 <ol className="manual-steps">
                   <li>在左侧填写商品标题、描述、关键词并上传产品图片。</li>
                   <li>点击“生成任务书”。</li>
@@ -1912,22 +2016,14 @@ export default function GeneratorWorkspace({ mode }: GeneratorWorkspaceProps) {
                   <button
                     className="primary-copy-button"
                     type="button"
-                    onClick={() => copyText(modules[0].content, "商品内容生成任务书")}
+                    onClick={copyLatestContentTask}
                   >
                     一键复制商品内容任务书
                   </button>
                   <button
                     className="primary-copy-button"
                     type="button"
-                    onClick={() => {
-                      if (!hasConfirmedContent) {
-                        setCopyStatus("请先完成 Step 1，并填写或确认最终标题、描述和核心卖点");
-                        window.setTimeout(() => setCopyStatus(""), 2400);
-                        return;
-                      }
-
-                      copyText(modules[1].content, "图片图需任务书");
-                    }}
+                    onClick={copyLatestImageTask}
                   >
                     一键复制图片图需任务书
                   </button>

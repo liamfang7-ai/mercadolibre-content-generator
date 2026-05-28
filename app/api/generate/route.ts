@@ -25,6 +25,25 @@ type GenerateRequest = {
 const OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses";
 const DEFAULT_MODEL = "gpt-4.1-mini";
 
+const STEP2_IMAGE_STRATEGY_RULES = `Step 2 image strategy rules:
+1. Selling point conversion rule: do not turn a selling point directly into a generic benefit poster. Convert final-description selling point -> buyer concern -> purchase decision value -> image role -> visual expression -> image prompt.
+2. For every selling point, answer: what buyer concern does it address, what purchase decision does it help, what image type fits it, whether it adds new information, whether it reduces mispurchase/returns/bad reviews, and whether it deserves its own image.
+3. Build a complete visual master system before planning 7 images: main visual style, main color, secondary color, accent color, typography system, title position rules, info card style, icon style, product lighting, background variation boundaries, bottom reminder bar style, safe margins.
+4. All 7 images must look like one consistent Mercado Libre / Mercado Livre product detail image set, not seven unrelated templates or standalone advertising posters.
+5. Image value elimination: replace any image that provides no new information, solves no specific buyer concern, does not help purchase decisions, repeats the product without explanation, becomes a generic benefit poster, or lowers perceived quality.
+6. For auto parts, moto parts and car accessories, prioritize decision-value images: pre-purchase confirmation, package contents, detail/interface/material close-ups, compatibility/reference information, installation position, old-vs-new comparison, size/quantity/left-right/front-rear confirmation, anti-misbuy reminder, real repair environment.
+7. Reduce or avoid generic benefit posters, big product + big title + glow background, repetitive product display, decorative tech light effects, and filler images.
+8. Choose visual route by product type: sensors/valves/interfaces use technical confirmation style; rubber bushings/chassis/suspension use industrial repair style; lights/electronics use clean tech style with restrained light; interior accessories use clean lifestyle style; tools use professional workbench style.
+9. Packaging rule: do not default to ordinary kraft boxes. Show packaging only if user provided real branded packaging, packaging improves trust, or packaging information helps purchase decisions. Prefer flat lay, quantity labels, info cards, accessory list and clean background.
+10. Avoid cheap tech poster style: no large blue glow, energy flows, sci-fi background, excessive glowing lines, or function posters with no practical information.
+11. Detail image premium rule: restrained background, clear product, realistic texture, refined close-up frame, thin accurate guide lines, little but precise information; no thick outlines, excessive yellow, dirty tech textures, cheap template magnifier boxes.
+12. Information density rule: information may be rich if it has purchase decision value, ordered layout, clear sections, hierarchy, mobile readability, and no empty benefit stacking.
+13. Image 6 special restriction: image 6 must not become a generic function poster. Prefer real installation/use scene, repair trust image, old-vs-new comparison, product use position, anti-misbuy reminder, concrete function verification infographic, or detail + scenario combined image.
+14. Detail image logic: each image must answer a concrete buyer question: what will I receive, is this the interface/size/position I need, what to confirm before buying, where are the real details, where is it installed, how to avoid buying wrong, which final-description selling point does it support.
+15. Every image prompt must include: This image must look like one page from a consistent Mercado Libre automotive product detail image set, not a standalone advertising poster. It must follow the same typography system, spacing, icon style, color palette, information card style, and product lighting as the other images. The image must provide practical purchase decision value, not just a generic benefit slogan.
+16. Every image prompt must also include: This image should not look like a generic advertising poster. It must work as a practical Mercado Libre product detail image that helps the buyer verify product information, reduce purchase risk, or understand the product value.
+17. Final value check: each image provides different new information; at least 4 images directly help purchase confirmation; avoid kraft-box cheapness and cheap blue tech poster; details look refined; all images share typography, title hierarchy, info cards, icons and accent logic; no Chinese customer-visible text; no invented vehicle model, number, certification, brand, size or material.`;
+
 function jsonResponse(body: unknown, status = 200) {
   return Response.json(body, { status });
 }
@@ -83,6 +102,8 @@ Critical rules:
 8. Do not invent vehicle models, years, OE numbers, dimensions, material, certifications, logos, brands or compatibility.
 9. Keep product appearance consistent with uploaded product images.
 
+${STEP2_IMAGE_STRATEGY_RULES}
+
 Return valid JSON only. Use this exact top-level shape:
 {
   "sevenImageBriefs": {
@@ -102,7 +123,13 @@ Return valid JSON only. Use this exact top-level shape:
         "imageNumber": string,
         "imageName": string,
         "finalDescriptionSellingPointSupported": string,
+        "buyerConcern": string,
+        "purchaseDecisionValue": string,
         "whyThisImageIsNeeded": string,
+        "newInformationProvided": string,
+        "avoidsGenericBenefitPoster": string,
+        "mergePlanIfSellingPointIsWeak": string,
+        "howItKeepsSetConsistency": string,
         "buyerConcernSolved": string,
         "recommendedVisualStyle": string,
         "backgroundSuggestion": string,
@@ -127,6 +154,10 @@ Return valid JSON only. Use this exact top-level shape:
     {
       "imageNumber": string,
       "finalDescriptionSellingPointSupported": string,
+      "buyerConcernThisImageSolves": string,
+      "purchaseDecisionValue": string,
+      "visualizedSellingPoint": string,
+      "avoidGenericBenefitPosterInstruction": string,
       "noTextPrompt": string,
       "textReferencePrompt": string,
       "negativePrompt": string,
