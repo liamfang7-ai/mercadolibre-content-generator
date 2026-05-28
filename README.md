@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mercado Libre 商品内容生成器
 
-## Getting Started
+这是一个独立的美客多商品内容生成工具，首页 `/` 提供：
 
-First, run the development server:
+- V1：生成可复制给 ChatGPT 的商品内容任务书
+- V2：通过服务端接口调用 OpenAI，生成完整商品内容方案
+- 产品图片本地上传和预览
+
+图片只在浏览器本地预览；使用 AI 生成功能时，图片会以 base64 data URL 随本次请求发送给服务端接口，不保存、不写入数据库。
+
+## 本地运行
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+打开 `http://localhost:3000`。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## OpenAI 配置
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+本地使用 AI 功能需要在项目根目录创建 `.env.local`：
 
-## Learn More
+```bash
+OPENAI_API_KEY=你的_key
+```
 
-To learn more about Next.js, take a look at the following resources:
+注意：
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- 不要把 `.env.local` 提交到 GitHub。
+- API Key 只在服务端 `app/api/generate/route.ts` 中读取，不会暴露给浏览器。
+- Vercel 上线后，要在 `Project Settings -> Environment Variables` 里配置 `OPENAI_API_KEY`。
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 当前边界
 
-## Deploy on Vercel
+当前版本只正式接入 OpenAI。
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+暂未接入：
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- DeepSeek
+- 自定义 AI 接口
+- 图片生成 API
+- Mercado Libre API
+- Supabase
+- 数据库
+- 服务器图片存储
+
+## 验证
+
+```bash
+npm.cmd run lint
+npx.cmd tsc --noEmit
+npm.cmd run build
+```

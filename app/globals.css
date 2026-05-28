@@ -8,8 +8,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: Arial, Helvetica, sans-serif;
+  --font-mono: Consolas, "Courier New", monospace;
 }
 
 body {
@@ -101,6 +101,31 @@ textarea {
   border-color: #2d6cdf;
   background: #f8fbff;
   color: #1d4ed8;
+}
+
+.primary-copy-button {
+  border: 1px solid #1d4ed8;
+  border-radius: 8px;
+  background: #2d6cdf;
+  padding: 0.85rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #ffffff;
+  transition:
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+
+.primary-copy-button:hover {
+  background: #1f57ba;
+  transform: translateY(-1px);
+}
+
+.secondary-button:disabled {
+  cursor: not-allowed;
+  border-color: #e2e8f0;
+  background: #f1f5f9;
+  color: #94a3b8;
 }
 
 .image-upload-panel {
@@ -196,6 +221,197 @@ textarea {
 .image-remove-button:hover {
   border-color: #fca5a5;
   background: #fee2e2;
+}
+
+.upload-message {
+  margin-top: 0.8rem;
+  border-radius: 6px;
+  background: #fff7ed;
+  padding: 0.75rem;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: #9a3412;
+}
+
+.ai-result-panel {
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  background: #f8fbff;
+  padding: 1rem;
+}
+
+.ai-error {
+  margin-top: 1rem;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  background: #fff7f7;
+  padding: 0.85rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #b91c1c;
+}
+
+.manual-panel {
+  border: 1px solid #d7dee8;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 1rem;
+}
+
+.workflow-panel {
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  background: #f8fbff;
+  padding: 1rem;
+}
+
+.confirmed-panel {
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  background: #f7fef9;
+  padding: 1rem;
+}
+
+.workflow-grid {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.75rem;
+}
+
+.workflow-card {
+  border: 1px solid #dbeafe;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 0.8rem;
+}
+
+.workflow-card span {
+  display: inline-flex;
+  width: 1.6rem;
+  height: 1.6rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #2d6cdf;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.workflow-card strong {
+  display: block;
+  margin-top: 0.55rem;
+  font-size: 0.88rem;
+  color: #0f172a;
+}
+
+.workflow-card p {
+  margin-top: 0.35rem;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: #64748b;
+}
+
+.manual-steps {
+  margin-top: 0.8rem;
+  list-style-position: inside;
+  list-style-type: decimal;
+  display: grid;
+  gap: 0.45rem;
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: #475569;
+}
+
+.manual-preview {
+  margin-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 1rem;
+}
+
+.manual-section-grid {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.manual-section {
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.manual-section h5 {
+  border-bottom: 1px solid #e2e8f0;
+  background: #ffffff;
+  padding: 0.65rem 0.8rem;
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: #334155;
+}
+
+.manual-section pre {
+  max-height: 340px;
+  overflow: auto;
+  padding: 0.85rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.7;
+  color: #1e293b;
+}
+
+.image-card-grid {
+  display: grid;
+  gap: 0.8rem;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fbff;
+  padding: 1rem;
+}
+
+.image-task-card {
+  overflow: hidden;
+  border: 1px solid #d7dee8;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.image-task-card summary {
+  display: flex;
+  cursor: pointer;
+  list-style: none;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding: 0.8rem;
+}
+
+.image-task-card summary::-webkit-details-marker {
+  display: none;
+}
+
+.image-task-card summary span span {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.82rem;
+  color: #64748b;
+}
+
+.image-task-card pre {
+  max-height: 280px;
+  overflow: auto;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+  padding: 0.85rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.7;
+  color: #1e293b;
 }
 
 .result-module {
